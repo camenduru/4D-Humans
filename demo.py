@@ -13,7 +13,7 @@ from hmr2.utils.renderer import Renderer
 
 LIGHT_BLUE=(0.65098039,  0.74117647,  0.85882353)
 
-DEFAULT_CHECKPOINT='logs/train/multiruns/hmr2/0/checkpoints/epoch=35-step=1000000.ckpt'
+DEFAULT_CHECKPOINT='/content/models/model.ckpt'
 parser = argparse.ArgumentParser(description='HMR2 demo code')
 parser.add_argument('--checkpoint', type=str, default=DEFAULT_CHECKPOINT, help='Path to pretrained model checkpoint')
 parser.add_argument('--img_folder', type=str, default='example_data/images', help='Folder with input images')
@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 # Setup HMR2.0 model
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-model_cfg = str(Path(args.checkpoint).parent.parent / 'model_config.yaml')
+model_cfg = '/content/models/model_config.yaml'
 model_cfg = get_config(model_cfg)
 model = HMR2.load_from_checkpoint(args.checkpoint, strict=False, cfg=model_cfg).to(device)
 model.eval()
@@ -33,8 +33,8 @@ model.eval()
 # Load detector
 from detectron2.config import LazyConfig
 from hmr2.utils.utils_detectron2 import DefaultPredictor_Lazy
-detectron2_cfg = LazyConfig.load(f"vendor/detectron2/projects/ViTDet/configs/COCO/cascade_mask_rcnn_vitdet_h_75ep.py")
-detectron2_cfg.train.init_checkpoint = "https://dl.fbaipublicfiles.com/detectron2/ViTDet/COCO/cascade_mask_rcnn_vitdet_h/f328730692/model_final_f05665.pkl"
+detectron2_cfg = LazyConfig.load(f"/content/4D-Humans/vendor/detectron2/projects/ViTDet/configs/COCO/cascade_mask_rcnn_vitdet_h_75ep.py")
+detectron2_cfg.train.init_checkpoint = "/content/models/model_final_f05665.pkl"
 for i in range(3):
     detectron2_cfg.model.roi_heads.box_predictors[i].test_score_thresh = 0.25
 detector = DefaultPredictor_Lazy(detectron2_cfg)
